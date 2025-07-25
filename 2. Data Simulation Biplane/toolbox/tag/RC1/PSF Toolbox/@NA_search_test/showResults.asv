@@ -1,0 +1,54 @@
+function [OTF_Sim_vs_Data,OTF_Cutoff]=showResults(obj)
+%   takes the data coming from Phase Retreival and shows OTF of data vs OTF of fitting 
+%   explanation, help
+            RawData=obj.RawData; % takes out the raw PSF data from the PR result
+            PSF=obj.RawData(:,:,11); % here we just look at the focal plane (averaged over all frames taken)
+            u1=fft2(PSF); % get matrix form of PSF
+            OTF=fftshift(u1); % we need to shift to the center
+            u2=OTF(:,63);
+            u3=abs(u2);
+            u4=u3(65:127,:);
+            u5=sqrt(u4);
+            lim1=max(u5);
+            lim2=0.05*max(u5);
+            mask=u5>lim2 & u5<lim1;
+            u6=u5(mask);
+            FOV=128;
+            bpp=96;
+            x=[1:FOV]; % Field of view = number of pixels on the image (128)
+            x1=x(mask);
+            x2=x1';
+            T=table(x2,u6);
+            [p,~,mu]=polyfit(T.x2,T.u6,3);
+            f=polyval(p,x2,[],mu);
+            x3=[0:50];
+            f1=polyval(p,x3,[],mu);
+            [f1_min,x3_min]=min(f1)
+            delta_k=1/(FOV*bpp); % unit size in k-space
+            R=x3_min*delta_k; % radius of OTF (it's in k-space)
+            OTF_R=R; %(=2NA/lambda_emmision)
+            %tmp=newim(128,128);
+            %single(tmp);
+            circle1=rr<x3_min & rr>x3_min-1; % it's 256by256
+            circle2=cut(circle1,[128,128]); % resize to 128by128
+            log_OTF=log(OTF);
+            OTF_Sim_vs_Data=overlay(abs(log_OTF).*20,circle2)
+                figure
+                plot(x2,u6,'o')
+                xlabel('frequency space radius(1/micron;each unit =1/bpp*FOV)')
+                ylabel('square(abs(OTF))')
+                title('Cutoff for infocus bead, based on NA measurment')
+                lambda_emm=690; %nm
+                NA=OTF_R*lambda_emm/2;
+                legend('OTF cutoff')
+                hold on
+                plot(x2,f)
+                %hold off
+                hold on
+                plot(x3,f1)
+                hold on
+                line('XData', [x3_min x3_min], 'YData', [0 140], 'LineStyle', '--', ...
+                'LineWidth', 2, 'Color','m')
+
+end
+

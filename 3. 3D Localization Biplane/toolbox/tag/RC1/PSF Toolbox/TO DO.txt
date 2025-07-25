@@ -1,0 +1,29 @@
+This describes a set of core PSF functions that we make use of ourself and also share as a toolbox. 
+
+All codes will be object oriented using MATLAB classes. 
+Follow the convention of lowercase for methods, Captital for properties:   method:   startMCMC()   property:  NCoefficients
+All codes should have a simple test exmple.  
+All codes should have clear documentation at top of m-file and be well-annotated throughout. 
+Mex codes should have a *.m help file. 
+Mex codes should be in a single VS2013 solution. 
+
+We want stand alone codes for the following: 
+
+Hanser Phase Retrieval Algoritm (Data Preprocessed)
+PSF Generation from Pupil Image (Using FTs and Direct Integration)
+PSF Generation from Zernike Coefficents (Using 1D Integration and Direct Integration)
+NA Retrival from infocus point source 
+
+Codes that make use of the above:
+
+Vector PSF calculator
+Zernike direct search method
+Organizing/Pre-process class for Hanser algorithm. 
+
+
+
+
+
+
+
+

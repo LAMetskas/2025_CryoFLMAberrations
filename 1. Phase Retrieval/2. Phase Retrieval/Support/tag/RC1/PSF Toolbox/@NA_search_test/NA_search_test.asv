@@ -1,0 +1,38 @@
+classdef NA_search_test < handle
+    % This class is being used to find Na/lambda (= radius of pupil function)
+    % Help: This code takes in the Phase Retrieval results and gives back the 
+    
+    properties
+        RawData;       % Raw bead data 
+        ShowSteps = 1;
+        Bpp;  %Back-projected pixel size (micron)
+        OTF_Radius;
+        FOV;
+    end
+    
+    %Note: The NA found in experiment is 1.4946
+    
+    methods
+        
+       % function OTF_R=findOTF_Radius(obj,Bpp,FOV)
+            
+            %if obj.ShowSteps
+             %   figure
+              %  plot(x2,u6,'o')
+              %  hold on
+               % plot(x2,f)
+                %hold off
+                %hold on
+                 %plot(x3,f1)
+            %end
+
+        %end
+        
+        function [OTF_Sim_vs_Data,OTF_Cutoff]=showResults(obj) % shows the circle OTF and the edge circle and also the cutoff NA
+   
+        end
+        
+    end
+    
+end
+

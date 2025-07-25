@@ -1,0 +1,284 @@
+% function draw_pupil(obj, iteration)
+%     % generate_pm - Generate phase and magnitude pupil functions
+% 
+%     % Define resolution and order
+%     R = 256;
+%     n = ceil((obj.ZernikeorderN+1)*(obj.ZernikeorderN+2)/2);  % Calculate number of Zernike coefficients
+%     pupil_phasenorm = zeros(R, R);  % Initialize phase pupil function
+% 
+%     % Compute the phase pupil function using Zernike coefficients
+%     for k = 1:n
+%         pupil_phasenorm = pupil_phasenorm + obj.Z.ZM(:, :, k) .* obj.phase_coefficients(k);
+%     end
+% 
+%     % Compute the magnitude pupil function
+%     pupil_magnorm = zeros(R, R);  % Initialize magnitude pupil function
+%     obj.mag_coefficients = zeros(n);  % Initialize magnitude coefficients
+%     obj.mag_coefficients(1) = 0;  % First magnitude coefficient is zero
+% 
+%     for k = 1:n
+%         pupil_magnorm = pupil_magnorm + obj.Z.ZM(:, :, k) .* obj.mag_coefficients(k);
+%     end
+% 
+%     % Save the computed magnitude and phase pupil functions
+%     obj.PRstruct.Fittedpupil.mag = pupil_magnorm;
+%     obj.PRstruct.Fittedpupil.phase = pupil_phasenorm;
+% 
+%     % Create figure with appropriate size and set to invisible
+%     fig = figure('Color', [1, 1, 1], ...
+%                  'Name', 'Phase Retrieved and Zernike Fitted Pupil Function', ...
+%                  'Resize', 'on', ...
+%                  'Units', 'normalized', ...
+%                  'Position', [0.3, 0.3, 0.4, 0.4], ...
+%                  'Visible', 'off');  % Set figure to not display
+% 
+%     % Define subregion for displaying pupil data
+%     RC = 128;
+%     Rsub = 127;
+% 
+%     % Create two subplots for magnitude and phase
+%     h1 = [];
+% 
+%     % Left subplot for Zernike Pupil Magnitude
+%     h1(1) = subplot('Position', [0.05, 0.1, 0.4, 0.8]);  % Adjusted position
+%     imagesc(double(obj.PRstruct.Fittedpupil.mag(RC-Rsub:RC+Rsub, RC-Rsub:RC+Rsub)), ...
+%             'Parent', h1(1));  % Display magnitude
+%     text(3, 8, 'Zernike Pupil Mag', 'Color', [1, 1, 1], 'FontSize', 10);  % Label
+%     colormap(h1(1), gray);  % Use grayscale colormap
+%     axis(h1(1), 'equal');
+%     axis(h1(1), 'off');
+% 
+%     % Right subplot for Zernike Pupil Phase
+%     h1(2) = subplot('Position', [0.55, 0.1, 0.4, 0.8]);  % Adjusted position
+%     imagesc(double(obj.PRstruct.Fittedpupil.phase(RC-Rsub:RC+Rsub, RC-Rsub:RC+Rsub)), ...
+%             'Parent', h1(2));  % Display phase
+%     text(3, 8, 'Zernike Pupil Phase', 'Color', [0, 0, 0], 'FontSize', 10);  % Label
+%     colormap(h1(2), gray);  % Use grayscale colormap
+%     axis(h1(2), 'equal');
+%     axis(h1(2), 'off');
+% 
+%     % Save the magnitude and phase figures to files
+%     saveas(fig, ['pupil_magnitude_phase_iteration_', num2str(iteration), '.png']);
+%     close(fig);  % Close the figure after saving
+% end
+
+function draw_pupil(obj, save_dir, iteration)
+    % generate_pm - Generate phase and magnitude pupil functions
+
+    % Define resolution and order
+    R = 256;
+    n = ceil((obj.ZernikeorderN+1)*(obj.ZernikeorderN+2)/2);  % Calculate number of Zernike coefficients
+    %n=11;
+    pupil_phasenorm = zeros(R, R);  % Initialize phase pupil function
+
+    % Compute the phase pupil function using Zernike coefficients
+    for k = 1:n
+        pupil_phasenorm = pupil_phasenorm + obj.Z.ZM(:, :, k) .* obj.phase_coefficients(k);
+    end
+
+    % Compute the RMS phase error in radians
+    valid_pupil = obj.Z.ZM(:,:,1) > 0;  % Assuming first Zernike mode defines the aperture
+    phase_values = pupil_phasenorm(valid_pupil);  % Extract phase values within the aperture
+    
+    mean_phase = mean(phase_values);  % Compute mean phase
+    rms_phase = sqrt(mean((phase_values - mean_phase).^2));  % Compute RMS phase in radians
+    
+    % Normalize the phase function by RMS
+    pupil_phase_rms = (pupil_phasenorm - mean_phase) / rms_phase;
+
+    % Compute the magnitude pupil function
+    pupil_magnorm = zeros(R, R);  % Initialize magnitude pupil function
+    obj.mag_coefficients = zeros(n);  % Initialize magnitude coefficients
+    obj.mag_coefficients(1) = 0;  % First magnitude coefficient is zero
+
+    for k = 1:n
+        pupil_magnorm = pupil_magnorm + obj.Z.ZM(:, :, k) .* obj.mag_coefficients(k);
+    end
+
+    % Save the computed magnitude and phase pupil functions
+    obj.PRstruct.Fittedpupil.mag = pupil_magnorm;
+    obj.PRstruct.Fittedpupil.phase = pupil_phasenorm;
+    obj.PRstruct.Fittedpupil.rms_phase = pupil_phase_rms;  % Store RMS phase
+
+    % % Create figure with appropriate size and set to invisible
+    % fig = figure('Color', [1, 1, 1], ...
+    %              'Name', 'Phase Retrieved and Zernike Fitted Pupil Function', ...
+    %              'Resize', 'on', ...
+    %              'Units', 'normalized', ...
+    %              'Position', [0.3, 0.3, 0.4, 0.4], ...
+    %              'Visible', 'off');  % Set figure to not display
+    % 
+    % % Define subregion for displaying pupil data
+    % RC = 128;
+    % Rsub = 63;
+    % 
+    % % Create two subplots for magnitude and phase
+    % h1 = [];
+    % 
+    % % Left subplot for Zernike Pupil Magnitude
+    % h1(1) = subplot('Position', [0.05, 0.1, 0.4, 0.8]);  % Adjusted position
+    % imagesc(double(obj.PRstruct.Fittedpupil.mag(RC-Rsub:RC+Rsub, RC-Rsub:RC+Rsub)), ...
+    %         'Parent', h1(1));  % Display magnitude
+    % %text(3, 8, 'Zernike Pupil Mag', 'Color', [1, 1, 1], 'FontSize', 10);  % Label
+    % colormap(h1(1), parula);  % Use 'parula' colormap for magnitude
+    % colorbar;  % Add a colorbar for magnitude
+    % caxis([0, 1]);  % Set fixed scale for magnitude (adjust as needed)
+    % axis(h1(1), 'equal');
+    % axis(h1(1), 'off');
+    % 
+    % % Right subplot for Zernike Pupil Phase
+    % h1(2) = subplot('Position', [0.55, 0.1, 0.4, 0.8]);  % Adjusted position
+    % imagesc(double(obj.PRstruct.Fittedpupil.phase(RC-Rsub:RC+Rsub, RC-Rsub:RC+Rsub)), ...
+    %         'Parent', h1(2));  % Display phase
+    % %text(3, 8, 'Zernike Pupil Phase', 'Color', [0, 0, 0], 'FontSize', 10);  % Label
+    % colormap(h1(2), parula);  % Use 'jet' colormap for phase
+    % colorbar;  % Add a colorbar for phase
+    % caxis([-1, 1]);  % Set fixed scale for phase between -0.5 and 0.5 radians
+    % axis(h1(2), 'equal');
+    % axis(h1(2), 'off');
+    % Create figure with appropriate size and set to invisible
+
+
+
+    fig = figure('Color', [1, 1, 1], ...
+                 'Name', 'Phase Retrieved and Zernike Fitted Pupil Function', ...
+                 'Resize', 'on', ...
+                 'Units', 'normalized', ...
+                 'Position', [0.3, 0.3, 0.5, 0.4], ...
+                 'Visible', 'off');  % Set figure to not display immediately
+    
+    % Define subregion for displaying pupil data
+    RC = 128;
+    Rsub = 63;
+    
+    % Create subplots for magnitude, phase, and RMS phase
+    h1 = [];
+    
+    % Left subplot for Zernike Pupil Magnitude
+    h1(1) = subplot('Position', [0.05, 0.1, 0.3, 0.8]);  % Adjusted position
+    imagesc(double(obj.PRstruct.Fittedpupil.mag(RC-Rsub:RC+Rsub, RC-Rsub:RC+Rsub)), ...
+            'Parent', h1(1));  % Display magnitude
+    title('Zernike Pupil Magnitude', 'FontSize', 12, 'FontWeight', 'bold');
+    colormap(h1(1), parula);  % Use 'parula' colormap for magnitude
+    colorbar;  % Add a colorbar for magnitude
+    caxis([0, 1]);  % Set fixed scale for magnitude (adjust as needed)
+    axis(h1(1), 'equal');
+    axis(h1(1), 'off');
+    
+    % Middle subplot for Zernike Pupil Phase
+    h1(2) = subplot('Position', [0.37, 0.1, 0.3, 0.8]);  % Adjusted position
+    imagesc(double(obj.PRstruct.Fittedpupil.phase(RC-Rsub:RC+Rsub, RC-Rsub:RC+Rsub)), ...
+            'Parent', h1(2));  % Display phase
+    title('Zernike Pupil Phase', 'FontSize', 12, 'FontWeight', 'bold');
+    colormap(h1(2), parula);  % Use 'parula' colormap for phase
+    colorbar;  % Add a colorbar for phase
+    caxis([-1, 1]);  % Set fixed scale for phase in radians
+    axis(h1(2), 'equal');
+    axis(h1(2), 'off');
+    
+    % Compute RMS phase value (stored in PRstruct)
+    %rms_phase = obj.PRstruct.Fittedpupil.rms_phase;
+    
+    % Right subplot for RMS Phase Display
+    h1(3) = subplot('Position', [0.69, 0.1, 0.3, 0.8]);  % Adjusted position
+    %axis off;  % No image, just text
+    imagesc(double(obj.PRstruct.Fittedpupil.rms_phase(RC-Rsub:RC+Rsub, RC-Rsub:RC+Rsub)), ...
+            'Parent', h1(3));  % Display phase
+    title('Zernike Pupil Phase RMS', 'FontSize', 12, 'FontWeight', 'bold');
+    colormap(h1(3), parula);  % Use 'parula' colormap for phase
+    colorbar;  % Add a colorbar for phase
+    caxis([-1, 1]);  % Set fixed scale for phase in radians
+    axis(h1(3), 'equal');
+    axis(h1(3), 'off');
+
+    % Save the magnitude and phase figures to files
+    saveas(fig, [save_dir,'pupil_magnitude_phase_iteration_', num2str(iteration), '.jpg']);
+    close(fig);  % Close the figure after saving
+end
+
+
+
+% function draw_pupil(obj, save_dir, iteration)
+%     % Generate phase and magnitude pupil functions
+% 
+%     % Define resolution and order
+%     R = 256;
+%     n = ceil((obj.ZernikeorderN+1)*(obj.ZernikeorderN+2)/2);  % Calculate number of Zernike coefficients
+%     pupil_phasenorm = zeros(R, R);  % Initialize phase pupil function
+% 
+%     % Compute the phase pupil function using Zernike coefficients
+%     for k = 1:n
+%         pupil_phasenorm = pupil_phasenorm + obj.Z.ZM(:, :, k) .* obj.phase_coefficients(k);
+%     end
+% 
+%     % Compute the magnitude pupil function
+%     pupil_magnorm = zeros(R, R);  % Initialize magnitude pupil function
+%     obj.mag_coefficients = zeros(n);  % Initialize magnitude coefficients
+%     obj.mag_coefficients(1) = 0;  % First magnitude coefficient is zero
+% 
+%     for k = 1:n
+%         pupil_magnorm = pupil_magnorm + obj.Z.ZM(:, :, k) .* obj.mag_coefficients(k);
+%     end
+% 
+%     % Save the computed magnitude and phase pupil functions
+%     obj.PRstruct.Fittedpupil.mag = pupil_magnorm;
+%     obj.PRstruct.Fittedpupil.phase = pupil_phasenorm;
+% 
+%     % Create figure with appropriate size and set to invisible
+%     fig = figure('Color', [1, 1, 1], ...
+%                  'Name', 'Phase Retrieved and Zernike Fitted Pupil Function', ...
+%                  'Resize', 'on', ...
+%                  'Units', 'normalized', ...
+%                  'Position', [0.3, 0.3, 0.4, 0.4], ...
+%                  'Visible', 'off');  % Set figure to not display
+% 
+%     % Define subregion for displaying pupil data
+%     RC = 128;
+%     Rsub = 63;
+% 
+%     % Extract subregion data
+%     mag_data = double(obj.PRstruct.Fittedpupil.mag(RC-Rsub:RC+Rsub, RC-Rsub:RC+Rsub));
+%     phase_data = double(obj.PRstruct.Fittedpupil.phase(RC-Rsub:RC+Rsub, RC-Rsub:RC+Rsub));
+% 
+%     % Calculate color axis limits based on data range
+%     mag_min = min(mag_data(:));
+%     mag_max = max(mag_data(:));
+%     phase_min = min(phase_data(:));
+%     phase_max = max(phase_data(:));
+% 
+%     % Handle the case where min and max are the same
+%     if mag_min == mag_max
+%         mag_caxis = [mag_min - 1, mag_max + 1];  % Add a small range
+%     else
+%         mag_caxis = [mag_min, mag_max];
+%     end
+% 
+%     if phase_min == phase_max
+%         phase_caxis = [phase_min - 1, phase_max + 1];  % Add a small range
+%     else
+%         phase_caxis = [phase_min, phase_max];
+%     end
+% 
+%     % Left subplot for Zernike Pupil Magnitude
+%     h1(1) = subplot('Position', [0.05, 0.1, 0.4, 0.8]);  % Adjusted position
+%     imagesc(mag_data, 'Parent', h1(1));  % Display magnitude
+%     colormap(h1(1), parula);  % Use 'parula' colormap for magnitude
+%     colorbar;  % Add a colorbar for magnitude
+%     caxis(h1(1), mag_caxis);  % Set dynamic caxis based on data range
+%     axis(h1(1), 'equal');
+%     axis(h1(1), 'off');
+% 
+%     % Right subplot for Zernike Pupil Phase
+%     h1(2) = subplot('Position', [0.55, 0.1, 0.4, 0.8]);  % Adjusted position
+%     imagesc(phase_data, 'Parent', h1(2));  % Display phase
+%     colormap(h1(2), parula);  % Use 'parula' colormap for phase
+%     colorbar;  % Add a colorbar for phase
+%     caxis(h1(2), phase_caxis);  % Set dynamic caxis based on data range
+%     axis(h1(2), 'equal');
+%     axis(h1(2), 'off');
+% 
+% 
+%     % Save the magnitude and phase figures to files
+%     saveas(fig, [save_dir, 'pupil_magnitude_phase_iteration_', num2str(iteration), '.jpg']);
+%     close(fig);  % Close the figure after saving
+% end
