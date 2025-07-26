@@ -33,7 +33,7 @@ We provide three MATLAB toolboxes as supplementary software for this manuscript:
 
 1\. Demonstration Datasets
 
-&nbsp;  We provide example datasets for testing and demonstration:
+   We provide example datasets for testing and demonstration:
 
 * 1\. Phase Retrieval\\3. Test Data\\1. Bead Stack RT\\Beads\_stack.mat: Bead image stack collected under room-temperature conditions.
 * 1\. Phase Retrieval\\3. Test Data\\2. Bead Stack Cryo\\Beads\_stack.mat: Bead image stack collected under cryogenic-temperature conditions.
@@ -42,51 +42,48 @@ We provide three MATLAB toolboxes as supplementary software for this manuscript:
 
 2\. Phase Retrieval Source Codes
 
-&nbsp;  Folder: 1. Crop Single Beads
+   Folder: 1. Crop Single Beads
 
-&nbsp; * Crop\_single\_beads\_1p.m – Crops subregions (64 × 64 × n) containing a single bead stack for phase retrieval.
-&nbsp; * Crop\_single\_noise\_1p.m – Crops subregions (64 × 64 × n) containing only background regions for noise estimation.
+* Crop\_single\_beads\_1p.m – Crops subregions (64 × 64 × n) containing a single bead stack for phase retrieval.
+* Crop\_single\_noise\_1p.m – Crops subregions (64 × 64 × n) containing only background regions for noise estimation.
 
-&nbsp;  Folder: 2. Phase Retrieval
+   Folder: 2. Phase Retrieval
 
-&nbsp; * main.m – Main script for running MLE-based phase retrieval.
-&nbsp; * visualize\_all\_results.m – Visualizes the retrieved results, including measured vs. fitted PSFs, pupil phase, and evaluation metrics.
-&nbsp; * calc\_nLogLikelihood.m – Calculates the negative log-likelihood used in phase retrieval optimization.
-&nbsp; * Support Folder – Contains all auxiliary functions, including PSF generation, pupil modeling, and other helper utilities.
+* main.m – Main script for running MLE-based phase retrieval.
+* visualize\_all\_results.m – Visualizes the retrieved results, including measured vs. fitted PSFs, pupil phase, and evaluation metrics.
+* calc\_nLogLikelihood.m – Calculates the negative log-likelihood used in phase retrieval optimization.
+* Support Folder – Contains all auxiliary functions, including PSF generation, pupil modeling, and other helper utilities.
 
 
 
 3\. Data Simulation Source Codes
 
-&nbsp;  Folder: 2. Data Simulation Biplane
+   Folder: 2. Data Simulation Biplane
 
-&nbsp; * main.m – Generates biplane simulated datasets with specified photon numbers and aberrations.
+* main.m – Generates biplane simulated datasets with specified photon numbers and aberrations.
 
 
 
 3\. 3D Localization Source Codes
 
-&nbsp;  Folder: 3. 3D Localization Biplane
+   Folder: 3. 3D Localization Biplane
 
-&nbsp; * main.m – Performs GPU-based 3D localization for simulated PSFs.
-&nbsp; * genIniguess.m – Estimates initial lateral positions.
-&nbsp; * geniniBiplane\_z\_mat\_parfor.m – Estimates initial axial positions.
-&nbsp; * genpsf\_biplane\_real.m – Generates PSF models directly from pupil functions.
-&nbsp; * gensamplepsf\_biplane.m – Pre-generates channel-specific PSF models.
-&nbsp; * cc2.m – Calculates 2D cross-correlation.
-&nbsp; * catstruct.m – Concatenates results from the two biplane channels.
-&nbsp; * genpsfstruct.m – Computes first-order partial derivatives of a 3D PSF for MLE-based optimization.
+* main.m – Performs GPU-based 3D localization for simulated PSFs.
+* genIniguess.m – Estimates initial lateral positions.
+* geniniBiplane\_z\_mat\_parfor.m – Estimates initial axial positions.
+* genpsf\_biplane\_real.m – Generates PSF models directly from pupil functions.
+* gensamplepsf\_biplane.m – Pre-generates channel-specific PSF models.
+* cc2.m – Calculates 2D cross-correlation.
+* catstruct.m – Concatenates results from the two biplane channels.
+* genpsfstruct.m – Computes first-order partial derivatives of a 3D PSF for MLE-based optimization.
+
 
 
 # Citation
 
 
 
-# Acknowledgments 
+# Acknowledgments
 
 The authors thank Louise Bertrand from Leica Microsystems, Inc. for providing technical and applications support. This work was supported by NIAID award 1DP2AI164293-01 to L.A.M. and NIGMS MIRA award R35GM119785 to F.H.
-
-
-
-
 
