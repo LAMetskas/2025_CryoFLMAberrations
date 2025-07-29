@@ -87,3 +87,9 @@ We provide three MATLAB toolboxes as supplementary software for this manuscript:
 
 The authors thank Louise Bertrand from Leica Microsystems, Inc. for providing technical and applications support. This work was supported by NIAID award 1DP2AI164293-01 to L.A.M. and NIGMS MIRA award R35GM119785 to F.H.
 
+# Copyrights
+Users agree to use the script package as is.
+
+This package is provided under Creative Commons copyright license Attribution-NonCommercial-ShareAlike 4.0 International (https://creativecommons.org/licenses/by-nc-sa/4.0/).
+
+This copyright license allows use for noncommercial use only, with attribution to the original package and sharing of all changes under the same license as the original. 
